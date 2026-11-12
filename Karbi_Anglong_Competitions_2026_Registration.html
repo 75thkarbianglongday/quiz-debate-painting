@@ -341,7 +341,7 @@ th { background: #f1f5f9; }
     <div class="reg-id" id="modalRegId"></div>
     <p>Please save this ID.</p>
     <div class="actions" style="justify-content:center;">
-      <button class="btn" id="printBtn">Print Confirmation</button>
+      <button class="btn" id="printBtn">Download Registration Card</button>
       <button class="btn btn-secondary" id="registerAnother">Register Another</button>
     </div>
   </div>
@@ -508,12 +508,45 @@ document.getElementById("registerAnother").onclick = function() {
   document.getElementById("schoolFields").classList.add("hidden");
 };
 document.getElementById("printBtn").onclick = function() {
-  const content = document.getElementById("printArea").innerHTML;
-  const w = window.open("", "", "width=800,height=600");
-  w.document.write("<html><head><title>Confirmation</title><style>body{font-family:system-ui;padding:28px;line-height:1.5;}</style></head><body>" + content + "</body></html>");
-  w.document.close();
-  w.focus();
-  w.print();
+  const id = document.getElementById("modalRegId").textContent;
+  const list = loadRegistrations();
+  const entry = list.find(r => r.id === id) || {};
+  const content = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Competition Registration - ${entry.id || id}</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 20px; background: #f8fafc; }
+  .card { max-width: 500px; margin: 20px auto; padding: 30px; border: 2px solid #2563eb; border-radius: 12px; background: white; }
+  h2 { text-align: center; color: #2563eb; margin-bottom: 4px; }
+  h3, h4 { text-align: center; margin-top: 0; }
+  h4 { color: #1e40af; }
+  hr { border: none; border-top: 1px solid #e2e8f0; margin: 12px 0; }
+  p { margin: 6px 0; }
+  .footer { font-size: 0.85rem; color: #64748b; text-align: center; margin-top: 16px; }
+</style></head><body>
+<div class="card">
+  <h2>75th Karbi Anglong Day 2026</h2>
+  <h3>Painting • Quiz • Debate</h3>
+  <h4>Registration Card</h4>
+  <hr>
+  <p><strong>Registration ID:</strong> ${entry.id || id}</p>
+  <p><strong>Category:</strong> ${entry.category || ""}</p>
+  <p><strong>Name / Contact:</strong> ${entry.name || entry.contactPerson || ""}</p>
+  <p><strong>Phone:</strong> ${entry.phone || ""}</p>
+  ${entry.schoolName ? `<p><strong>School:</strong> ${entry.schoolName}</p>` : ""}
+  ${entry.teamName ? `<p><strong>Team:</strong> ${entry.teamName}</p>` : ""}
+  ${entry.debateSide ? `<p><strong>Debate Side:</strong> ${entry.debateSide}</p>` : ""}
+  ${entry.participants ? `<p><strong>Participants:</strong> ${entry.participants}</p>` : ""}
+  <p><strong>Address:</strong> ${entry.address || "—"}</p>
+  <hr>
+  <p class="footer">Organised by Sports & Youth Welfare Department, KAAC</p>
+</div>
+</body></html>`;
+  const blob = new Blob([content], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Competition_Registration_${entry.id || id}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 };
 
 document.getElementById("adminBtn").onclick = function() {
