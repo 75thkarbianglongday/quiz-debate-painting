@@ -373,10 +373,10 @@ function saveRegistrations(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 function generateRegId(category) {
-  const list = loadRegistrations();
   const prefix = category.startsWith("Painting") ? "PNT" : category.startsWith("Quiz") ? "QZ" : "DBT";
-  const count = list.filter(r => r.category === category).length + 1;
-  return prefix + "2026-" + String(count).padStart(3, "0");
+  const t = Date.now().toString(36).toUpperCase().slice(-5);
+  const r = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
+  return prefix + "-" + t + r;
 }
 
 function showSuccess(id) {
