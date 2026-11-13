@@ -352,6 +352,18 @@ th { background: #f1f5f9; }
 <script>
 const STORAGE_KEY = "karbiAnglongCompetitions2026";
 const ADMIN_PASS = "kaac172026";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzfq6rsQKLCoxmEnzZdIC2x-fhQsYBacBWW99Qmx2Vn8SmjPcQ9RSpD6_Xg5J9a7wBj3A/exec";
+
+function sendToGoogleSheet(entry) {
+  if (!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL.includes("PASTE_YOUR")) return;
+  const payload = { ...entry, portal: "Competitions" };
+  fetch(GOOGLE_SHEET_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(payload)
+  }).catch(() => {});
+}
 
 function loadRegistrations() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
@@ -469,6 +481,7 @@ document.getElementById("regForm").addEventListener("submit", function(e) {
     const list = loadRegistrations();
     list.push(entry);
     saveRegistrations(list);
+    sendToGoogleSheet(entry);
 
     let details = `<p><strong>Registration ID:</strong> ${entry.id}</p>`;
     details += `<p><strong>Category:</strong> ${entry.category}</p>`;
