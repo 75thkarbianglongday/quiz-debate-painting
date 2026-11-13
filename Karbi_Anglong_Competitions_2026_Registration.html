@@ -357,10 +357,16 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzfq6rsQKLCoxm
 function sendToGoogleSheet(entry) {
   if (!GOOGLE_SHEET_URL || GOOGLE_SHEET_URL.includes("PASTE_YOUR")) return;
   const payload = { ...entry, portal: "Competitions" };
+  const body = new URLSearchParams();
+  Object.keys(payload).forEach(k => {
+    if (payload[k] != null) body.append(k, String(payload[k]));
+  });
   fetch(GOOGLE_SHEET_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: { "Content-Type": "text/plain" },
+    body: body
+  }).catch(() => {});
+},
     body: JSON.stringify(payload)
   }).catch(() => {});
 }
